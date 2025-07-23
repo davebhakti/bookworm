@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book Notes</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Reading History</a>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/add">Add Book</a></li>
+                <li><a href="/stats">Stats</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>My Reading Journey</h1>
+        
+        <div class="controls">
+            <a href="/add" class="btn btn-primary">+ Add New Book</a>
+            
+            <select id="sortBooks" class="sort-dropdown">
+                <option value="">Sort by...</option>
+                <option value="recent">Most Recent</option>
+                <option value="rating">Highest Rated</option>
+                <option value="title">Title (A-Z)</option>
+            </select>
+        </div>
+        
+        <div class="books-grid">
+            <% if (books && books.length === 0) { %>
+                <div class="no-books">
+                    <p>📚 No books added yet!</p>
+                    <p>Start building your library by adding your first book.</p>
+                </div>
+            <% } else if (books) { %>
+                <% books.forEach(book => { %>
+                    <div class="book-card">
+                        <img src="<%= book.cover_url || 'https://via.placeholder.com/150x200?text=No+Cover' %>" 
+                             alt="<%= book.title %> cover" 
+                             class="book-cover">
+                        <div class="book-info">
+                            <h3 class="book-title"><%= book.title %></h3>
+                            <p class="book-author">by <%= book.author %></p>
+                            <div class="rating">
+                                <% for(let i = 1; i <= 10; i++) { %>
+                                    <span class="star <%= i <= book.rating ? 'filled' : '' %>">★</span>
+                                <% } %>
+                                <span class="rating-number"><%= book.rating %>/10</span>
+                            </div>
+                            <p class="date-read">Read: <%= new Date(book.date_read).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></p>
+                            <% if (book.notes) { %>
+                                <p class="book-notes"><%= book.notes.substring(0, 100) %>...</p>
+                            <% } %>
+                            <div class="card-actions">
+                                <a href="/book/<%= book.id %>" class="btn btn-sm btn-view">View</a>
+                                <a href="/edit/<%= book.id %>" class="btn btn-sm btn-edit">Edit</a>
+                                <button onclick="deleteBook(<%= book.id %>)" class="btn btn-sm btn-delete">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Reading Notes. Made with ❤️</p>
+            <p class="stats">
+                <% if (books) { %>
+                    Total Books: <%= books.length %> | 
+                    Average Rating: <%= books.length > 0 ? (books.reduce((sum, book) => sum + book.rating, 0) / books.length).toFixed(1) : 0 %>
+                <% } %>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function deleteBook(id) {
+            if (confirm('Are you sure you want to delete this book?')) {
+                window.location.href = `/delete/${id}`;
+            }
+        }
+
+        document.getElementById('sortBooks').addEventListener('change', function() {
+            window.location.href = `/?sort=${this.value}`;
+        });
+    </script>
+</body>
+</html>

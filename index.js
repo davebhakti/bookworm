@@ -1,10 +1,7 @@
 import express from "express";
 import axios from "axios";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
 import pg from "pg";
 
-dotenv.config();
 const app = express();
 const port = 3000;
 
@@ -19,6 +16,15 @@ const db = new pg.Client({
 db.connect();
 
 //Middlware
-app.use(bodyParser.urlencoded({extended: true}));
+app.set('view engine', 'ejs');
 app.use(express.static('public'));
-app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+
+// One route to test any EJS file
+app.get("/", (req, res) =>{
+  res.render("index.ejs");
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
