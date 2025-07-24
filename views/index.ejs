@@ -26,16 +26,22 @@
     <div class="container">
         <h1>My Reading Journey</h1>
         
-        <div class="controls">
-            <a href="/add" class="btn btn-primary">+ Add New Book</a>
-            
-            <select id="sortBooks" class="sort-dropdown">
-                <option value="">Sort by...</option>
-                <option value="recent">Most Recent</option>
-                <option value="rating">Highest Rated</option>
-                <option value="title">Title (A-Z)</option>
-            </select>
-        </div>
+        <form action="/add" method="POST" class="book-form">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="author">Author*</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating (1-10)</label>
+                <input type="text" id="rating" name="rating" min="1" max="10" required>
+            </div>
+        </form>
         
         <div class="books-grid">
             <% if (books && books.length === 0) { %>
