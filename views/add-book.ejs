@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Book</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Reading History</a>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/add" class="active">Add Book</a></li>
+                <li><a href="/stats">Stats</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Add New Book</h1>
+        
+        <form action="/add" method="POST" class="book-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="title">Title*</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="author">Author*</label>
+                    <input type="text" id="author" name="author" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="rating">Rating (1-10)*</label>
+                    <select id="rating" name="rating" required>
+                        <% for(let i=1; i<=10; i++) { %>
+                            <option value="<%= i %>"><%= i %></option>
+                        <% } %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="coverType">Cover Lookup</label>
+                    <select id="coverType" class="cover-type">
+                        <option value="isbn">ISBN</option>
+                        <option value="olid">OLID</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="coverId">Book Identifier</label>
+                <div class="cover-input-group">
+                    <input type="text" id="coverId" placeholder="Enter ISBN/OLID">
+                    <button type="button" id="fetchCover" class="btn btn-secondary">Find Cover</button>
+                </div>
+                <div id="coverPreview" class="cover-preview">
+                    <img id="coverImage" style="display: none;">
+                    <p id="coverMessage">Cover will appear here</p>
+                </div>
+                <input type="hidden" id="coverUrl" name="cover_url">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea id="notes" name="notes" rows="4"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Book</button>
+                <a href="/" class="btn btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('fetchCover').addEventListener('click', async function() {
+            const type = document.getElementById('coverType').value;
+            const id = document.getElementById('coverId').value.trim();
+            const preview = document.getElementById('coverImage');
+            const message = document.getElementById('coverMessage');
+            const coverUrl = document.getElementById('coverUrl');
+
+            if (!id) {
+                message.textContent = 'Please enter an identifier';
+                message.style.color = '#e74c3c';
+                preview.style.display = 'none';
+                return;
+            }
+
+            message.textContent = 'Searching for cover...';
+            message.style.color = '#3498db';
+            preview.style.display = 'none';
+
+            try {
+                // First try with default=false to verify cover exists
+                const testUrl = `https://covers.openlibrary.org/b/${type}/${id}-M.jpg?default=false`;
+                await axios.head(testUrl);
+                
+                // If we get here, cover exists - set the image and hidden field
+                const coverImageUrl = `https://covers.openlibrary.org/b/${type}/${id}-M.jpg`;
+                preview.src = coverImageUrl;
+                preview.style.display = 'block';
+                coverUrl.value = coverImageUrl;
+                message.textContent = 'Cover found!';
+                message.style.color = '#2ecc71';
+            } catch (error) {
+                preview.style.display = 'none';
+                message.textContent = 'Cover not found - using placeholder';
+                message.style.color = '#e74c3c';
+                coverUrl.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

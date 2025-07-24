@@ -49,9 +49,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/add", (req, res)=> {
-  const result = req.query.sort
-});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
