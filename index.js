@@ -49,6 +49,9 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.get('/add', (req, res) => {
+    res.render('add-book'); // Renders add-book.ejs
+});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
